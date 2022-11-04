@@ -9,6 +9,7 @@ def setup_route(app):
         # 유저 정보 생성 등
         web.post('/api/v1/signin', signin),
         web.post('/api/v1/signup', signup),
+        web.get('/api/v1/signout', signout),
 
         # 채팅룸 페이지 기능
         web.get('/api/v1/chattingRoom', fetch_chatting_room_info),

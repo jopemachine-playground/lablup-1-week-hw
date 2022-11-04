@@ -64,3 +64,7 @@ async def signup(request):
         return web.Response(status=500, reason=e.__cause__)
 
     return web.Response(status=200)
+
+@routes.get('/api/v1/signout')
+def signout(request):
+    redis_client.delete(req_data["id"])

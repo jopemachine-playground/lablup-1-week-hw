@@ -8,7 +8,7 @@ sio = socketio.AsyncServer(logger=True, engineio_logger=True)
 
 # Room과 이 Namespace를 연동시켜야 좋을 거 같은데.
 # Ref: https://heodolf.tistory.com/125
-class ChattingRoomNamespace(socketio.AsyncNamespace):
+class ChatterNamespace(socketio.AsyncNamespace):
   def __init__(self, sio, namespace, *args, **kwargs):
     super(Namespace, self).__init__(namespace)
 
