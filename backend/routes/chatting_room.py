@@ -7,7 +7,6 @@ routes = web.RouteTableDef()
 sio = socketio.AsyncServer(logger=True, engineio_logger=True)
 
 # Room과 이 Namespace를 연동시켜야 좋을 거 같은데.
-# Ref: https://heodolf.tistory.com/125
 class ChatterNamespace(socketio.AsyncNamespace):
   def __init__(self, sio, namespace, *args, **kwargs):
     super(Namespace, self).__init__(namespace)
@@ -27,17 +26,13 @@ class ChatterNamespace(socketio.AsyncNamespace):
     def on_disconnect(self, sid):
         self.sio.logger.info(f'{ sid } [SOCKET][DISCONNECT]')
 
-@routes.get('/api/v1/chattingRoom')
-async def fetch_chatting_room_info(request):
-    name = request.match_info.get('name', "Anonymous")
-    text = "Hello, " + name
-    return web.Response(text=text)
-
+@routes.get('/api/v1/chattingRoom/chats')
 async def fetch_chatting_room_chatlogs(request):
     name = request.match_info.get('name', "Anonymous")
     text = "Hello, " + name
     return web.Response(text=text)
 
+@routes.put('/api/v1/chattingRoom/chat')
 async def put_new_chat_log(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)

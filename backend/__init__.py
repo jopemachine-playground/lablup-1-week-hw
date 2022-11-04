@@ -15,10 +15,6 @@ def setup_route(app):
         web.get('/api/v1/chattingRoom', fetch_chatting_room_info),
         web.get('/api/v1/chattingRoom/chats', fetch_chatting_room_chatlogs),
         web.put('/api/v1/chattingRoom/chat', put_new_chat_log),
-
-        # 채팅룸 셀렉터 페이지 기능
-        web.get('/api/v1/chattingRooms', fetch_chatting_rooms),
-        web.put('/api/v1/chattingRooms', create_new_chatting_room),
     ])
 
 def main():
