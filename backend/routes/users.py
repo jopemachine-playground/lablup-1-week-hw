@@ -4,7 +4,7 @@ import logging
 sys.path.append('../')
 from time import time
 from config import MONGO_DB_HOST, MONGO_DB_PORT, APP_NAME
-from api import mongo_db_client, redis_client
+from api import mongo_db_client, redis_userlogin_client
 
 import hashlib
 from aiohttp import web
@@ -31,10 +31,10 @@ async def signin(request):
     if not db_data or not (data['id'] == db_data['id'] and data['pw'] == db_data['pw']):
         return web.Response(status=401)
     else:
-        if redis_client.get(req_data["id"]):
+        if redis_userlogin_client.get(req_data["id"]):
             logging.info(f"'{req_data['id']}' already logged in")
 
-        redis_client.set(req_data["id"], time(), 24 * 3600)
+        redis_userlogin_client.set(req_data["id"], time(), 24 * 3600)
         return web.Response(status=200)
 
 @routes.post('/api/v1/signup')
@@ -67,4 +67,4 @@ async def signup(request):
 
 @routes.get('/api/v1/signout')
 def signout(request):
-    redis_client.delete(req_data["id"])
+    redis_userlogin_client.delete(req_data["id"])

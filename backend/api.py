@@ -4,5 +4,8 @@ import redis
 
 mongo_db_client = MongoClient(host=MONGO_DB_HOST, port=int(MONGO_DB_PORT))
 
-redis_pool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=0, max_connections=4)
-redis_client = redis.StrictRedis(host=REDIS_HOST, port=int(REDIS_PORT), db=0, connection_pool=redis_pool, password="changeme")
+redis_userlogin_pool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=0, max_connections=4)
+redis_userlogin_client = redis.StrictRedis(host=REDIS_HOST, port=int(REDIS_PORT), db=0, connection_pool=redis_userlogin_pool, password=REDIS_PW)
+
+redis_chatting_pool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=0, max_connections=4)
+redis_chatting_client = redis.StrictRedis(host=REDIS_HOST, port=int(REDIS_PORT), db=0, connection_pool=redis_chatting_pool, password=REDIS_PW)
