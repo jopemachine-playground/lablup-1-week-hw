@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import styled from "styled-components";
 
 import ChattingRoomPage from "./pages/chattingRoom";
@@ -10,7 +9,6 @@ const INITIAL_PAGE = "SignIn";
 
 const App = () => {
   const [page, setPage] = useState(INITIAL_PAGE);
-  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     const sessionId = window.localStorage.getItem('session-id');
@@ -22,7 +20,7 @@ const App = () => {
   let main;
   switch (page) {
     case "ChattingRoom":
-      main = <ChattingRoomPage userId={userId} />;
+      main = <ChattingRoomPage setPage={setPage} />;
       break;
     case "SignIn":
       main = <SignInPage setPage={setPage} />;

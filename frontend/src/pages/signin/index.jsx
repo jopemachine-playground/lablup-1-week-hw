@@ -29,12 +29,12 @@ const SignInPage  = (props) => {
         .then(({ data: sessionId }) => {
           console.log('logged in user\'s session id', sessionId);
 
-          window.sessionStorage.setItem('user-id', userId);
-          window.sessionStorage.setItem('session-id', sessionId);
-          window.location.href = "/";
+          window.localStorage.setItem('user-id', userId);
+          window.localStorage.setItem('session-id', sessionId);
+          props.SetPage("ChattingRoom");
         })
         .catch((err) => {
-          setErrorMsg({ errorMsg: getErrorMsg(err.response.status) });
+          setErrorMsg(getErrorMsg(err.response.status));
         });
     }
   };

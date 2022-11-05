@@ -33,10 +33,10 @@ const SignupPage = (props) => {
           props.setPage('SignIn');
         })
         .catch((err) => {
-          setErrorMsg({ errorMsg: getErrorMsg(err.response.status) });
+          setErrorMsg(getErrorMsg(err.response.status));
         });
     } else {
-      setErrorMsg({ errorMsg: "비밀번호와 비밀번호 확인이 같지 않습니다." });
+      setErrorMsg("비밀번호와 비밀번호 확인이 같지 않습니다.");
     }
   };
 
