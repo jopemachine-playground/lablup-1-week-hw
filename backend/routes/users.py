@@ -5,6 +5,7 @@ sys.path.append('../')
 from time import time
 from config import MONGO_DB_HOST, MONGO_DB_PORT, APP_NAME
 from api import mongo_db_client, redis_userlogin_client
+from utils import generate_session_id
 
 import hashlib
 from aiohttp import web
@@ -34,8 +35,10 @@ async def signin(request):
         if redis_userlogin_client.get(req_data["id"]):
             logging.info(f"'{req_data['id']}' already logged in")
 
-        redis_userlogin_client.set(req_data["id"], time(), 24 * 3600)
-        return web.Response(status=200)
+        # id, pw, 로그인 시간으로 session_id 생성
+        session_id = generate_session_id(user_id=req_data['id'], user_pw=req_data['pw'])
+        redis_userlogin_client.set(req_data["id"], session_id, 24 * 3600)
+        return web.Response(status=200, text=session_id)
 
 @routes.post('/api/v1/signup')
 async def signup(request):
