@@ -28,10 +28,7 @@ const SignInPage  = (props) => {
         })
         .then(({ data: sessionId }) => {
           console.log('logged in user\'s session id', sessionId);
-
-          window.localStorage.setItem('user-id', userId);
-          window.localStorage.setItem('session-id', sessionId);
-          props.SetPage("ChattingRoom");
+          props.setPage("ChattingRoom");
         })
         .catch((err) => {
           setErrorMsg(getErrorMsg(err.response.status));
@@ -40,13 +37,23 @@ const SignInPage  = (props) => {
   };
 
   return (
-    <div style={{}}>
-      <Input onChange={e => setUserId(e.target.value)} value={userId} placeholder="아이디" />
+    <div style={{
+      marginTop: 12,
+      marginLeft: 12,
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+      <Input onChange={e => setUserId(e.target.value)} value={userId} placeholder="아이디" style={{
+        marginBottom: 3,
+      }}/>
       <Input
         type="password"
         onChange={e => setUserPW(e.target.value)}
         value={userPW}
         placeholder="비밀번호"
+        style={{
+          marginBottom: 12,
+        }}
       />
 
       {errorMsg && <FormText>{errorMsg}</FormText>}
@@ -54,6 +61,9 @@ const SignInPage  = (props) => {
       <Button
         color="primary"
         onClick={handleSignIn}
+        style={{
+          marginBottom: 3,
+        }}
       >
         로그인
       </Button>

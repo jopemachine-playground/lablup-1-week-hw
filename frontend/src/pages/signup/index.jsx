@@ -41,26 +41,41 @@ const SignupPage = (props) => {
   };
 
   return (
-    <div style={{}}>
-      <Input onChange={e => setUserId(e.target.value)} value={userId} placeholder="아이디" />
+    <div style={{
+      marginTop: 12,
+      marginLeft: 12,
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+      <Input onChange={e => setUserId(e.target.value)} value={userId} placeholder="아이디" style={{
+        marginBottom: 3,
+      }}/>
       <Input
         type="password"
         onChange={e => setUserPW(e.target.value)}
         placeholder="비밀번호"
         value={userPW}
+        style={{
+          marginBottom: 3,
+        }}
       />
       <Input
         type="password"
         onChange={e => setUserPWConf(e.target.value)}
         placeholder="비밀번호 확인"
         value={userPWConf}
+        style={{
+          marginBottom: 8,
+        }}
       />
 
       {errorMsg && <FormText>{errorMsg}</FormText>}
       <Button
         color="primary"
         onClick={() => props.setPage("SignIn")}
-        style={{}}
+        style={{
+          marginBottom: 3,
+        }}
       >
         로그인
       </Button>
