@@ -2,8 +2,7 @@
 import sys
 import logging
 sys.path.append('../')
-from time import time
-from config import MONGO_DB_HOST, MONGO_DB_PORT, APP_NAME
+from config import APP_NAME
 from api import mongo_db_client, redis_userlogin_client
 from utils import generate_session_id
 
@@ -68,6 +67,12 @@ async def signup(request):
 
     return web.Response(status=200)
 
-@routes.get('/api/v1/signout')
-def signout(request):
+@routes.post('/api/v1/signout')
+async def signout(request):
+    try:
+        req_data = await request.json()
+    except Exception as e:
+        logging.error(e)
+        return web.Response(status=400, reason=e.__cause__)
+
     redis_userlogin_client.delete(req_data["id"])
