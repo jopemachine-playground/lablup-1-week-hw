@@ -4,6 +4,7 @@ import logging
 sys.path.append('../')
 from config import APP_NAME
 from api import mongo_db_client, redis_userlogin_client
+from utils import is_valid_user
 from utils import generate_session_id
 
 import hashlib
@@ -72,7 +73,7 @@ async def signup(request):
     return web.Response(status=200)
 
 @routes.get('/api/v1/signout')
-async def signout(request):
+def signout(request):
     user_id = request.cookies.get('user_id')
     if not user_id:
         return web.Response(status=400)
@@ -81,3 +82,13 @@ async def signout(request):
 
     res = web.Response(status=200)
     return res
+
+@routes.get('/api/v1/ping')
+def check_login_session_is_valid(request):
+    user_id = request.cookies.get('user_id')
+    session_id = request.cookies.get('session_id')
+
+    if not is_valid_user(user_id=user_id, session_id=session_id):
+        return web.Response(status=401)
+
+    return web.Response(status=200)
