@@ -1,16 +1,16 @@
 # Q: 파이썬에서 이걸 좀 더 잘 처리할 수 있는 방법?
 import sys
 import logging
-sys.path.append('../')
-from config import APP_NAME
-from api import mongo_db_client, redis_userlogin_client
-from utils import is_valid_user
-from utils import generate_session_id
-
 import hashlib
 from aiohttp import web
+sys.path.append('../')
+
+from config import APP_NAME
+from api import mongo_db_client, redis_userlogin_client
+from utils import is_valid_user, generate_session_id
 
 routes = web.RouteTableDef()
+
 
 @routes.post('/api/v1/signin')
 async def signin(request):
@@ -29,20 +29,47 @@ async def signin(request):
         'id': data['id']
     })
 
-    if not db_data or not (data['id'] == db_data['id'] and data['pw'] == db_data['pw']):
+    if not db_data or not (
+        data['id'] == db_data['id'] and data['pw'] == db_data['pw']
+    ):
         return web.Response(status=401)
     else:
         if redis_userlogin_client.get(req_data["id"]):
             logging.info(f"'{req_data['id']}' already logged in")
 
         # id, pw, 로그인 시간으로 session_id 생성해, 브라우저에 쿠키로 전달 (set-cookie)
-        session_id = generate_session_id(user_id=req_data['id'], user_pw=req_data['pw'])
+        session_id = generate_session_id(
+            user_id=req_data['id'],
+            user_pw=req_data['pw'],
+        )
+
         session_duration = 24 * 3600
-        redis_userlogin_client.set(req_data["id"], session_id, session_duration)
+        redis_userlogin_client.set(
+            req_data["id"],
+            session_id,
+            session_duration
+        )
+
         res = web.Response(status=200)
-        res.set_cookie("session_id", session_id, httponly=True, secure=True, samesite=True, max_age=session_duration)
-        res.set_cookie("user_id", data['id'], httponly=False, secure=True, samesite=True, max_age=session_duration)
+        res.set_cookie(
+            "session_id",
+            session_id,
+            httponly=True,
+            secure=True,
+            samesite=True,
+            max_age=session_duration
+        )
+
+        res.set_cookie(
+            "user_id",
+            data['id'],
+            httponly=False,
+            secure=True,
+            samesite=True,
+            max_age=session_duration
+        )
         return res
+
 
 @routes.post('/api/v1/signup')
 async def signup(request):
@@ -72,6 +99,7 @@ async def signup(request):
 
     return web.Response(status=200)
 
+
 @routes.get('/api/v1/signout')
 def signout(request):
     user_id = request.cookies.get('user_id')
@@ -82,6 +110,7 @@ def signout(request):
 
     res = web.Response(status=200)
     return res
+
 
 @routes.get('/api/v1/ping')
 def check_login_session_is_valid(request):

@@ -1,4 +1,5 @@
-from config import *
+from config import MONGO_DB_PORT, MONGO_DB_HOST, REDIS_HOST, REDIS_PORT, \
+    REDIS_PW
 from pymongo import MongoClient
 import redis
 

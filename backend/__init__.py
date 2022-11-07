@@ -1,7 +1,10 @@
 import logging
+import socketio
 from aiohttp import web
-from routes import *
+from routes.users import signin, signup, signout, check_login_session_is_valid
+from routes.chatting_room import ChatNamespace
 import aiohttp_cors
+
 
 def setup_route(app, cors):
     app.add_routes([
@@ -14,8 +17,10 @@ def setup_route(app, cors):
     for route in list(app.router.routes()):
         cors.add(route)
 
+
 def setup_middlewares(app):
     pass
+
 
 def setup_websocket_server(app):
     sio = socketio.AsyncServer(
@@ -29,16 +34,17 @@ def setup_websocket_server(app):
     sio.register_namespace(ChatNamespace(sio, '/ws-chatting'))
     sio.attach(app)
 
+
 def main():
     logging.basicConfig(level=logging.DEBUG)
     app = web.Application()
 
     cors = aiohttp_cors.setup(app, defaults={
-    "*": aiohttp_cors.ResourceOptions(
-            allow_credentials=True,
-            expose_headers="*",
-            allow_headers="*",
-        )
+        "*": aiohttp_cors.ResourceOptions(
+                allow_credentials=True,
+                expose_headers="*",
+                allow_headers="*",
+            )
     })
 
     setup_route(app=app, cors=cors)
@@ -46,6 +52,7 @@ def main():
 
     setup_websocket_server(app)
     web.run_app(app)
+
 
 if __name__ == '__main__':
     main()

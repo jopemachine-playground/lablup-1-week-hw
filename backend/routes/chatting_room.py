@@ -1,9 +1,9 @@
 import sys
 import logging
-sys.path.append('../')
 import socketio
-
 from socketio import Namespace
+sys.path.append('../')
+
 
 class ChatNamespace(socketio.AsyncNamespace):
     def __init__(self, sio, namespace):
