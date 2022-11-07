@@ -128,14 +128,14 @@ export default function ChattingRoom(props) {
 					className={'btn btn-primary btn-block'}
 					onClick={handleChatBtnClick}
 				>
-					Send
+					보내기
 				</ChatButton>
 
 				<LogoutButton
 					className={'btn btn-primary btn-block'}
 					onClick={handleLogout}
 				>
-					Logout
+					로그아웃
 				</LogoutButton>
 			</div>
 		</OuterContainer>

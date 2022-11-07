@@ -49,8 +49,8 @@ def main():
 
     setup_route(app=app, cors=cors)
     setup_middlewares(app)
-
     setup_websocket_server(app)
+
     web.run_app(app)
 
 

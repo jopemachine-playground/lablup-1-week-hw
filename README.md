@@ -8,7 +8,7 @@
 
 * Using Redis for maintaining user's login sessions.
 
-* Using mongodb for storing user's information.
+* Using Mongodb for storing user's information.
 
 * Do not keep chatting messages.
 
