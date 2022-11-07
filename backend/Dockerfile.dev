@@ -1,0 +1,7 @@
+FROM python:3.9.5
+LABEL maintainer="jopemachine@naver.com"
+WORKDIR /usr/src/app
+COPY . /usr/src/app
+RUN pip3 install -r requirements.txt
+EXPOSE 8080
+CMD ["python", "__init__.py"]

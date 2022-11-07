@@ -1,0 +1,40 @@
+version: "3"
+services:
+  react:
+    depends_on:
+      - backend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    volumes:
+      - /usr/src/app/node_modules
+      - ./frontend:/usr/src/app
+    stdin_open: true
+
+  redis:
+    image: redis
+    command: redis-server --port 6379
+    restart: always
+    ports:
+      - 6379:6379
+
+  mongo_db:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: root
+    #   MONGO_INITDB_ROOT_PASSWORD: changeme
+
+  backend:
+    depends_on:
+      - redis
+      - mongo_db
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - 8080:8080
