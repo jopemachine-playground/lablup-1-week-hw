@@ -26,7 +26,7 @@ export default function ChattingRoom(props) {
 
 	useEffect(() => {
 		axios
-			.get(`${API.chatting_backend}/api/v1/ping`, {
+			.get(`${API.CHATTING_BACKEND}/api/v1/ping`, {
 				withCredentials: true,
 			})
 			.catch(error => {
@@ -78,10 +78,12 @@ export default function ChattingRoom(props) {
 	};
 
 	const handleLogout = () => {
-		axios.get(`${API.chatting_backend}/api/v1/signout`).then(() => {
+		axios.get(`${API.CHATTING_BACKEND}/api/v1/signout`, {
+			withCredentials: true,
+		}).then(() => {
 			props.setPage('SignIn');
 		}).catch(() => {
-			alert('Failed to logout');
+			alert('로그인에 실패했습니다!');
 		});
 	};
 

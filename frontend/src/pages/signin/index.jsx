@@ -7,8 +7,10 @@ const getErrorMessage = errorCode => {
 	switch (errorCode) {
 		case 400:
 			return '잘못된 요청입니다.';
-		case 420:
+		case 401:
 			return '잘못된 아이디나 패스워드입니다.';
+		case 500:
+			return '서버에서 문제가 발생했습니다.';
 		default:
 			return '잠시 후 다시 시도해주시기 바랍니다.';
 	}
@@ -22,7 +24,7 @@ const SignInPage = props => {
 	const handleSignIn = () => {
 		if (userId && userPW) {
 			axios
-				.post(`${API.chatting_backend}/api/v1/signin`, {
+				.post(`${API.CHATTING_BACKEND}/api/v1/signin`, {
 					id: userId,
 					pw: userPW,
 				}, {

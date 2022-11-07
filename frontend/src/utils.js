@@ -3,9 +3,7 @@ const parseCookie = string_ => {
 		return {};
 	}
 
-	return string_
-		.split(';')
-		.map(v => v.split('='))
+	return string_.split(';').map(v => v.split('='))
 		.reduce((acc, v) => {
 			acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
 			return acc;

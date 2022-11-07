@@ -6,9 +6,11 @@ import API from '../../api.js';
 const getErrorMessage = errorCode => {
 	switch (errorCode) {
 		case 400:
-			return '잘못된 요청입니다.';
-		case 419:
+			return '요청의 포맷이 잘못 되었습니다.';
+		case 409:
 			return '이미 존재하는 아이디입니다.';
+		case 500:
+			return '서버에서 문제가 발생했습니다.';
 		default:
 			return '잠시 후 다시 시도해주시기 바랍니다.';
 	}
@@ -27,11 +29,11 @@ const SignupPage = props => {
 
 		if (userPW === userPWConf) {
 			axios
-				.post(`${API.chatting_backend}/api/v1/signup`, {
+				.post(`${API.CHATTING_BACKEND}/api/v1/signup`, {
 					id: userId,
 					pw: userPW,
 				})
-				.then(({data}) => {
+				.then(() => {
 					props.setPage('SignIn');
 				})
 				.catch(error => {
