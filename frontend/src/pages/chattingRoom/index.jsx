@@ -12,7 +12,7 @@ export default function ChattingRoom(props) {
 	const chatEventHandler = useRef();
 	const chattingLogArea = useRef();
 	const [ws, setWs] = useState();
-	const userId = useMemo(() => parseCookie(document.cookie)['user-id'], []);
+	const userId = useMemo(() => parseCookie(document.cookie)['user_id'], []);
 
 	useEffect(() => {
 		chatlogsRef.current = chatlogs;
@@ -26,12 +26,8 @@ export default function ChattingRoom(props) {
 
 	useEffect(() => {
 		axios
-			.get(`${API.chatting_backend}/api/v1/chattingRoom/chats`, {
+			.get(`${API.chatting_backend}/api/v1/ping`, {
 				withCredentials: true,
-			})
-			.then(({data}) => {
-				console.log('data', data);
-				setChatlogs(data.chats);
 			})
 			.catch(error => {
 				if (error.response && error.response.status === 401) {
@@ -58,9 +54,8 @@ export default function ChattingRoom(props) {
 			console.log('ws for chatting connected successfully.');
 		});
 
-		socket.on('chat', message => {
-			console.log('chat', message);
-			chatEventHandler.current(message);
+		socket.on('message', message => {
+			chatEventHandler.current(JSON.parse(message));
 		});
 
 		setWs(socket);
@@ -72,17 +67,14 @@ export default function ChattingRoom(props) {
 
 	const handleChatBtnClick = () => {
 		if (ws) {
-			ws.emit('chat', chat);
-		}
+			const chatData = JSON.stringify({
+				message: chat,
+				created_by: userId,
+				created_at: new Date().toLocaleString(),
+			});
 
-		// Axios
-		//   .put(`${API.chatting_backend}/api/v1/chattingRoom/chat`, {
-		//     chat,
-		//   })
-		//   .then(({ data }) => {
-		//     setChat("");
-		//     if (data !== true) console.error(data);
-		//   });
+			ws.emit('message', chatData);
+		}
 	};
 
 	const handleLogout = () => {
@@ -103,9 +95,13 @@ export default function ChattingRoom(props) {
 				);
 
 				return (
-					<div key={`log-${idx}`}>
+					<div key={`log-${idx}`} style={{
+						display: 'flex',
+						flexDirection: 'row',
+					}}>
+						<CreatedAt>{`[${chatlog.created_at}]`}</CreatedAt>
 						{speaker}
-						<div>{`[${chatlog.created_at}] ${chatlog.message}`}</div>
+						<div>{chatlog.message}</div>
 					</div>
 				);
 			})}
@@ -130,14 +126,14 @@ export default function ChattingRoom(props) {
 					className={'btn btn-primary btn-block'}
 					onClick={handleChatBtnClick}
 				>
-          Send
+					Send
 				</ChatButton>
 
 				<LogoutButton
 					className={'btn btn-primary btn-block'}
 					onClick={handleLogout}
 				>
-          Logout
+					Logout
 				</LogoutButton>
 			</div>
 		</OuterContainer>
@@ -145,55 +141,63 @@ export default function ChattingRoom(props) {
 }
 
 const Title = styled.div`
-  font-size: 25px;
-  margin-bottom: 20px;
+	font-size: 25px;
+	margin-bottom: 20px;
 `;
 
 const SubTitle = styled.div`
-  font-size: 15px;
-  margin-bottom: 10px;
+	font-size: 15px;
+	margin-bottom: 10px;
 `;
 
 const OuterContainer = styled.span`
-  margin-left: 60px;
-  margin-top: 30px;
-  height: 80%;
-  width: 80%;
-  display: flex;
-  flex-direction: column;
+	margin-left: 60px;
+	margin-top: 30px;
+	height: 80%;
+	width: 80%;
+	display: flex;
+	flex-direction: column;
 `;
 
 const ChatButton = styled.button`
-  width: 100px;
-  height: 25px;
-  margin-bottom: 30px;
+	width: 100px;
+	height: 25px;
+	margin-bottom: 30px;
 `;
 
 const LogoutButton = styled.button`
-  width: 100px;
-  height: 25px;
-  margin-bottom: 30px;
-  margin-left: 6px;
+	width: 100px;
+	height: 25px;
+	margin-bottom: 30px;
+	margin-left: 6px;
 `;
 
 const ChatInputArea = styled.textarea`
-  width: 400px;
-  height: 30px;
-  margin-bottom: 20px;
+	width: 400px;
+	height: 30px;
+	margin-bottom: 20px;
 `;
 
 const ChatLogArea = styled.div`
-  overflow-y: scroll;
-  height: 60%;
-  margin-bottom: 15px;
+	overflow-y: scroll;
+	height: 60%;
+	margin-bottom: 15px;
+`;
+
+const CreatedAt = styled.div`
+	display: inline-block;
+	color: #777;
+	margin-right: 3px;
 `;
 
 const MyChat = styled.div`
-  display: inline-block;
-  color: #fc8dea;
+	display: inline-block;
+	color: #fc8dea;
+	margin-right: 3px;
 `;
 
 const OthersChat = styled.div`
-  display: inline-block;
-  color: #ffe291;
+	display: inline-block;
+	color: #ffe291;
+	margin-right: 3px;
 `;
