@@ -1,7 +1,6 @@
 # Q: 파이썬에서 이걸 좀 더 잘 처리할 수 있는 방법?
 import sys
 import logging
-import hashlib
 from aiohttp import web
 sys.path.append('../')
 
@@ -21,7 +20,7 @@ async def signin(request):
         logging.error(e)
         return web.Response(status=400)
 
-    user_id, user_pw = req_data["id"], req_data["pw"]
+    user_id, user_pw = req_data['id'], req_data['pw']
 
     db_data = mongo_db_client[APP_NAME]['users'].find_one({
         'id': user_id
@@ -32,7 +31,7 @@ async def signin(request):
     ):
         return web.Response(status=401)
     else:
-        if redis_userlogin_client.get(req_data["id"]):
+        if redis_userlogin_client.get(req_data['id']):
             logging.info(f"'{user_id}' already logged in")
 
         session_id = generate_session_id(
@@ -49,7 +48,7 @@ async def signin(request):
 
         res = web.Response(status=200)
         res.set_cookie(
-            "session_id",
+            'session_id',
             session_id,
             httponly=True,
             secure=True,
@@ -58,7 +57,7 @@ async def signin(request):
         )
 
         res.set_cookie(
-            "user_id",
+            'user_id',
             user_id,
             httponly=False,
             secure=True,
@@ -76,10 +75,10 @@ async def signup(request):
         logging.error(e)
         return web.Response(status=400)
 
-    user_id = req_data["id"]
+    user_id = req_data['id']
     data = {
         'id': user_id,
-        'pw': get_password_hash(req_data["pw"])
+        'pw': get_password_hash(req_data['pw'])
     }
 
     already_id_exist = mongo_db_client[APP_NAME]['users'].find_one({
@@ -103,7 +102,7 @@ def signout(request):
     user_id = request.cookies.get('user_id')
     session_id = request.cookies.get('session_id')
 
-    if not is_valid_user(user_id=user_id, session_id=session_id):
+    if not is_valid_user(user_id, session_id):
         return web.Response(status=401)
 
     if not user_id:
@@ -113,8 +112,8 @@ def signout(request):
 
     res = web.Response(status=200)
 
-    res.del_cookie("session_id")
-    res.del_cookie("user_id")
+    res.del_cookie('session_id')
+    res.del_cookie('user_id')
 
     return res
 
@@ -124,7 +123,7 @@ def check_login_session_is_valid(request):
     user_id = request.cookies.get('user_id')
     session_id = request.cookies.get('session_id')
 
-    if not is_valid_user(user_id=user_id, session_id=session_id):
+    if not is_valid_user(user_id, session_id):
         return web.Response(status=401)
 
     return web.Response(status=200)

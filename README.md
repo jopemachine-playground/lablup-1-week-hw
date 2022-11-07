@@ -12,7 +12,7 @@
 
 * Do not keep chatting messages.
 
-* Implemented using socket.io (Web-socket) in the server, client both.
+* Implemented using socket.io (Web-socket) in the server, client both side.
 
 * Include Dockerfile, docker-compose.yml
 

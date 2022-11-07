@@ -17,5 +17,4 @@ class ChatNamespace(socketio.AsyncNamespace):
 
     async def on_message(self, sid, chat_data):
         logging.info(f'{ sid } [SOCKET][MESSAGE] { chat_data }')
-        await self.emit("message", data=chat_data, namespace=self.namespace)
-
+        await self.emit('message', data=chat_data, namespace=self.namespace)
