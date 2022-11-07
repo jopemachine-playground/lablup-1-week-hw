@@ -74,20 +74,20 @@ const SignupPage = props => {
 			{errorMessage && <FormText>{errorMessage}</FormText>}
 			<Button
 				color='primary'
-				onClick={() => props.setPage('SignIn')}
+				onClick={handleSignUp}
 				style={{
 					marginBottom: 3,
 				}}
 			>
-        로그인
+				회원가입
 			</Button>
 
 			<Button
 				color='primary'
-				onClick={handleSignUp}
+				onClick={() => props.setPage('SignIn')}
 				style={{}}
 			>
-        회원가입
+				로그인 페이지로 이동
 			</Button>
 		</div>
 	);
