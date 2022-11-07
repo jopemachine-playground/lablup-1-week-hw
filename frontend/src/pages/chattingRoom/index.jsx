@@ -83,7 +83,7 @@ export default function ChattingRoom(props) {
 		}).then(() => {
 			props.setPage('SignIn');
 		}).catch(() => {
-			alert('로그인에 실패했습니다!');
+			alert('로그아웃에 실패했습니다!');
 		});
 	};
 

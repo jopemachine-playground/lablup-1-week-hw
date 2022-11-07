@@ -69,14 +69,14 @@ const SignInPage = props => {
 					marginBottom: 3,
 				}}
 			>
-        로그인
+				로그인
 			</Button>
 
 			<Button
 				color='primary'
 				onClick={() => props.setPage('SignUp')}
 			>
-        회원가입
+				회원가입
 			</Button>
 		</div>
 	);
