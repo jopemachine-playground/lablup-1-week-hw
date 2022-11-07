@@ -7,7 +7,8 @@ sys.path.append('../')
 
 from config import APP_NAME
 from api import mongo_db_client, redis_userlogin_client
-from utils import is_valid_user, generate_session_id
+from utils import is_valid_user, generate_session_id, get_password_hash, \
+    check_passwd_match
 
 routes = web.RouteTableDef()
 
@@ -18,20 +19,16 @@ async def signin(request):
         req_data = await request.json()
     except Exception as e:
         logging.error(e)
-        return web.Response(status=400, reason=e.__cause__)
+        return web.Response(status=400)
 
-    user_id = req_data["id"]
-    data = {
-        'id': user_id,
-        'pw': hashlib.sha256(req_data["pw"].encode()).hexdigest()
-    }
+    user_id, user_pw = req_data["id"], req_data["pw"]
 
     db_data = mongo_db_client[APP_NAME]['users'].find_one({
-        'id': data['id']
+        'id': user_id
     })
 
-    if not db_data or not (
-        data['id'] == db_data['id'] and data['pw'] == db_data['pw']
+    if not db_data or not check_passwd_match(
+        user_pw.encode('utf-8'), db_data['pw']
     ):
         return web.Response(status=401)
     else:
@@ -39,8 +36,8 @@ async def signin(request):
             logging.info(f"'{user_id}' already logged in")
 
         session_id = generate_session_id(
-            user_id=req_data['id'],
-            user_pw=req_data['pw'],
+            user_id,
+            user_pw,
         )
 
         session_duration = 24 * 3600
@@ -82,7 +79,7 @@ async def signup(request):
     user_id = req_data["id"]
     data = {
         'id': user_id,
-        'pw': hashlib.sha256(req_data["pw"].encode()).hexdigest()
+        'pw': get_password_hash(req_data["pw"])
     }
 
     already_id_exist = mongo_db_client[APP_NAME]['users'].find_one({

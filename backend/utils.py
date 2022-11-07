@@ -1,6 +1,15 @@
 import hashlib
 from time import time
 from api import redis_userlogin_client
+import bcrypt
+
+
+def get_password_hash(user_pw):
+    return bcrypt.hashpw(user_pw.encode('utf-8'), bcrypt.gensalt())
+
+
+def check_passwd_match(pw1, pw2):
+    return bcrypt.checkpw(pw1, pw2)
 
 
 def is_valid_user(user_id, session_id):
