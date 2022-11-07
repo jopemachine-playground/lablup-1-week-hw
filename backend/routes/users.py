@@ -103,12 +103,21 @@ async def signup(request):
 @routes.get('/api/v1/signout')
 def signout(request):
     user_id = request.cookies.get('user_id')
+    session_id = request.cookies.get('session_id')
+
+    if not is_valid_user(user_id=user_id, session_id=session_id):
+        return web.Response(status=401)
+
     if not user_id:
         return web.Response(status=400)
 
     redis_userlogin_client.delete(user_id)
 
     res = web.Response(status=200)
+
+    res.del_cookie("session_id")
+    res.del_cookie("user_id")
+
     return res
 
 
