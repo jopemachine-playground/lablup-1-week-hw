@@ -8,10 +8,10 @@ def setup_route(app, cors):
         # 유저 정보 관련 기능
         web.post('/api/v1/signin', signin),
         web.post('/api/v1/signup', signup),
-        web.post('/api/v1/signout', signout),
+        web.get('/api/v1/signout', signout),
 
         # 채팅룸 페이지 기능
-        web.post('/api/v1/chattingRoom/chats', fetch_chatting_room_chatlogs),
+        web.get('/api/v1/chattingRoom/chats', fetch_chatting_room_chatlogs),
         # web.put('/api/v1/chattingRoom/chat', put_new_chat_log),
     ])
 

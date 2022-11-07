@@ -25,6 +25,8 @@ const SignInPage  = (props) => {
         .post(`${API.chatting_backend}/api/v1/signin`, {
           id: userId,
           pw: userPW
+        }, {
+          withCredentials: true
         })
         .then(({ data: sessionId }) => {
           console.log('logged in user\'s session id', sessionId);

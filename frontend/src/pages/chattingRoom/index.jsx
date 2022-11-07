@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { io } from "socket.io-client";
 import API from '../../api';
-
-const userId = window.localStorage.getItem('user-id');
-const sessionId = window.localStorage.getItem('session-id');
+import { parseCookie } from '../../utils';
 
 export default function ChattingRoom(props) {
   const [chat, setChat] = useState("");
@@ -14,6 +12,9 @@ export default function ChattingRoom(props) {
   const chatEventHandler = useRef();
   const chattingLogArea = useRef();
   const [ws, setWs] = useState();
+  const userId = useMemo(() => {
+    return parseCookie(document.cookie)['user-id'];
+  }, []);
 
   useEffect(() => {
     chatlogsRef.current = chatlogs;
@@ -27,26 +28,33 @@ export default function ChattingRoom(props) {
 
   useEffect(() => {
     axios
-    .post(`${API.chatting_backend}/api/v1/chattingRoom/chats`, {
-      id: userId,
-      'session-id': sessionId,
+    .get(`${API.chatting_backend}/api/v1/chattingRoom/chats`, {
+      withCredentials: true
     })
     .then(({ data }) => {
       console.log("data", data);
       setChatlogs(data.chats);
     })
     .catch(e => {
-      alert(e)
+      if (e.response) {
+        if (e.response.status === 401) {
+          props.setPage("SignIn")
+          return
+        }
+      }
+
+      alert(e);
     });
   }, []);
 
   useEffect(() => {
     const socket = io(
-      `${API.chatting_backend}/ws-chatting`,
+      'localhost:8080/ws-chatting',
       {
-        // transports: ["websocket"],
+        transports: ['websocket', 'polling', 'flashsocket'],
+        path: "/socket.io",
         port: 8080,
-        // forceNew: true,
+        forceNew: true,
       }
     );
 

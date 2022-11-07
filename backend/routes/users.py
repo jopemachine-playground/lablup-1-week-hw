@@ -34,10 +34,14 @@ async def signin(request):
         if redis_userlogin_client.get(req_data["id"]):
             logging.info(f"'{req_data['id']}' already logged in")
 
-        # id, pw, 로그인 시간으로 session_id 생성
+        # id, pw, 로그인 시간으로 session_id 생성해, 브라우저에 쿠키로 전달 (set-cookie)
         session_id = generate_session_id(user_id=req_data['id'], user_pw=req_data['pw'])
-        redis_userlogin_client.set(req_data["id"], session_id, 24 * 3600)
-        return web.Response(status=200, text=session_id)
+        session_duration = 24 * 3600
+        redis_userlogin_client.set(req_data["id"], session_id, session_duration)
+        res = web.Response(status=200)
+        res.set_cookie("session_id", session_id, httponly=True, secure=True, samesite=True, max_age=session_duration)
+        res.set_cookie("user_id", data['id'], httponly=False, secure=True, samesite=True, max_age=session_duration)
+        return res
 
 @routes.post('/api/v1/signup')
 async def signup(request):
@@ -67,12 +71,13 @@ async def signup(request):
 
     return web.Response(status=200)
 
-@routes.post('/api/v1/signout')
+@routes.get('/api/v1/signout')
 async def signout(request):
-    try:
-        req_data = await request.json()
-    except Exception as e:
-        logging.error(e)
-        return web.Response(status=400, reason=e.__cause__)
+    user_id = request.cookies.get('user_id')
+    if not user_id:
+        return web.Response(status=400)
 
-    redis_userlogin_client.delete(req_data["id"])
+    redis_userlogin_client.delete(user_id)
+
+    res = web.Response(status=200)
+    return res

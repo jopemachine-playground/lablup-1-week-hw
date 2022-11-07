@@ -4,6 +4,7 @@ import styled from "styled-components";
 import ChattingRoomPage from "./pages/chattingRoom";
 import SignInPage from "./pages/signin";
 import SignUpPage from "./pages/signup";
+import {parseCookie} from './utils';
 
 const INITIAL_PAGE = "SignIn";
 
@@ -11,8 +12,8 @@ const App = () => {
   const [page, setPage] = useState(INITIAL_PAGE);
 
   useEffect(() => {
-    const sessionId = window.localStorage.getItem('session-id');
-    if (sessionId) {
+    const userId = parseCookie(document.cookie)['user_id'];
+    if (userId) {
       setPage('ChattingRoom');
     }
   }, []);
