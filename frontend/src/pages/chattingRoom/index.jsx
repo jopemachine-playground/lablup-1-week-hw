@@ -1,153 +1,147 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import styled from "styled-components";
-import axios from "axios";
-import { io } from "socket.io-client";
-import API from '../../api';
-import { parseCookie } from '../../utils';
+import React, {useState, useEffect, useRef, useMemo} from 'react';
+import styled from 'styled-components';
+import axios from 'axios';
+import {io} from 'socket.io-client';
+import API from '../../api.js';
+import {parseCookie} from '../../utils.js';
 
 export default function ChattingRoom(props) {
-  const [chat, setChat] = useState("");
-  const [chatlogs, setChatlogs] = useState([]);
-  const chatlogsRef = useRef(chatlogs);
-  const chatEventHandler = useRef();
-  const chattingLogArea = useRef();
-  const [ws, setWs] = useState();
-  const userId = useMemo(() => {
-    return parseCookie(document.cookie)['user-id'];
-  }, []);
+	const [chat, setChat] = useState('');
+	const [chatlogs, setChatlogs] = useState([]);
+	const chatlogsRef = useRef(chatlogs);
+	const chatEventHandler = useRef();
+	const chattingLogArea = useRef();
+	const [ws, setWs] = useState();
+	const userId = useMemo(() => parseCookie(document.cookie)['user-id'], []);
 
-  useEffect(() => {
-    chatlogsRef.current = chatlogs;
-  });
+	useEffect(() => {
+		chatlogsRef.current = chatlogs;
+	});
 
-  useEffect(() => {
-    chatEventHandler.current = (message) => {
-      setChatlogs([...chatlogsRef.current, message]);
-    };
-  }, []);
+	useEffect(() => {
+		chatEventHandler.current = message => {
+			setChatlogs([...chatlogsRef.current, message]);
+		};
+	}, []);
 
-  useEffect(() => {
-    axios
-    .get(`${API.chatting_backend}/api/v1/chattingRoom/chats`, {
-      withCredentials: true
-    })
-    .then(({ data }) => {
-      console.log("data", data);
-      setChatlogs(data.chats);
-    })
-    .catch(e => {
-      if (e.response) {
-        if (e.response.status === 401) {
-          props.setPage("SignIn")
-          return
-        }
-      }
+	useEffect(() => {
+		axios
+			.get(`${API.chatting_backend}/api/v1/chattingRoom/chats`, {
+				withCredentials: true,
+			})
+			.then(({data}) => {
+				console.log('data', data);
+				setChatlogs(data.chats);
+			})
+			.catch(error => {
+				if (error.response && error.response.status === 401) {
+					props.setPage('SignIn');
+					return;
+				}
 
-      alert(e);
-    });
-  }, []);
+				alert(error);
+			});
+	}, []);
 
-  useEffect(() => {
-    const socket = io(
-      'localhost:8080/ws-chatting',
-      {
-        transports: ['websocket', 'polling', 'flashsocket'],
-        path: "/socket.io",
-        port: 8080,
-        forceNew: true,
-      }
-    );
+	useEffect(() => {
+		const socket = io(
+			'localhost:8080/ws-chatting',
+			{
+				transports: ['websocket', 'polling', 'flashsocket'],
+				path: '/socket.io',
+				port: 8080,
+				forceNew: true,
+			},
+		);
 
-    socket.on("connect", () => {
-      console.log("ws for chatting connected successfully.");
-    });
+		socket.on('connect', () => {
+			console.log('ws for chatting connected successfully.');
+		});
 
-    socket.on("chat", (msg) => {
-      console.log("chat", msg);
-      chatEventHandler.current(msg);
-    });
+		socket.on('chat', message => {
+			console.log('chat', message);
+			chatEventHandler.current(message);
+		});
 
-    setWs(socket);
-  }, []);
+		setWs(socket);
+	}, []);
 
-  useEffect(() => {
-    chattingLogArea.current.scrollTop = chattingLogArea.current.scrollHeight;
-  }, [chatlogs])
+	useEffect(() => {
+		chattingLogArea.current.scrollTop = chattingLogArea.current.scrollHeight;
+	}, [chatlogs]);
 
-  const handleChatBtnClick = () => {
-    if (ws) {
-      ws.emit('chat', chat)
-    }
+	const handleChatBtnClick = () => {
+		if (ws) {
+			ws.emit('chat', chat);
+		}
 
-    // axios
-    //   .put(`${API.chatting_backend}/api/v1/chattingRoom/chat`, {
-    //     chat,
-    //   })
-    //   .then(({ data }) => {
-    //     setChat("");
-    //     if (data !== true) console.error(data);
-    //   });
-  };
+		// Axios
+		//   .put(`${API.chatting_backend}/api/v1/chattingRoom/chat`, {
+		//     chat,
+		//   })
+		//   .then(({ data }) => {
+		//     setChat("");
+		//     if (data !== true) console.error(data);
+		//   });
+	};
 
-  const handleLogout = () => {
-    axios.get(`${API.chatting_backend}/api/v1/signout`).then(() => {
-      props.setPage("SignIn");
-    }).catch(() => {
-      alert("Failed to logout");
-    })
-  }
+	const handleLogout = () => {
+		axios.get(`${API.chatting_backend}/api/v1/signout`).then(() => {
+			props.setPage('SignIn');
+		}).catch(() => {
+			alert('Failed to logout');
+		});
+	};
 
-  const renderTextArea = () => {
-    return (
-      <ChatLogArea ref={chattingLogArea}>
-        {chatlogs.map((chatlog, idx) => {
-          const speaker = userId === chatlog.created_by ? (
-              <MyChat>{chatlog.created_by}: </MyChat>
-            ) : (
-              <OthersChat>{chatlog.created_by}: </OthersChat>
-            );
+	const renderTextArea = () => (
+		<ChatLogArea ref={chattingLogArea}>
+			{chatlogs.map((chatlog, idx) => {
+				const speaker = userId === chatlog.created_by ? (
+					<MyChat>{chatlog.created_by}: </MyChat>
+				) : (
+					<OthersChat>{chatlog.created_by}: </OthersChat>
+				);
 
-          return (
-            <div key={`log-${idx}`}>
-              {speaker}
-              <div>{`[${chatlog.created_at}] ${chatlog.message}`}</div>
-            </div>
-          );
-        })}
-      </ChatLogArea>
-    );
-  };
+				return (
+					<div key={`log-${idx}`}>
+						{speaker}
+						<div>{`[${chatlog.created_at}] ${chatlog.message}`}</div>
+					</div>
+				);
+			})}
+		</ChatLogArea>
+	);
 
-  return (
-    <OuterContainer>
-      <Title>채팅방</Title>
-      <SubTitle>채팅 로그</SubTitle>
-      {renderTextArea()}
-      <ChatInputArea
-        placeholder={"텍스트를 입력하세요."}
-        value={chat}
-        onChange={(e) => setChat(e.target.value)}
-      />
-      <div style={{
-        display: 'flex',
-        flexDirection: 'row'
-      }}>
-        <ChatButton
-          className={"btn btn-primary btn-block"}
-          onClick={handleChatBtnClick}
-        >
+	return (
+		<OuterContainer>
+			<Title>채팅방</Title>
+			<SubTitle>채팅 로그</SubTitle>
+			{renderTextArea()}
+			<ChatInputArea
+				placeholder={'텍스트를 입력하세요.'}
+				value={chat}
+				onChange={e => setChat(e.target.value)}
+			/>
+			<div style={{
+				display: 'flex',
+				flexDirection: 'row',
+			}}>
+				<ChatButton
+					className={'btn btn-primary btn-block'}
+					onClick={handleChatBtnClick}
+				>
           Send
-        </ChatButton>
+				</ChatButton>
 
-        <LogoutButton
-          className={"btn btn-primary btn-block"}
-          onClick={handleLogout}
-        >
+				<LogoutButton
+					className={'btn btn-primary btn-block'}
+					onClick={handleLogout}
+				>
           Logout
-        </LogoutButton>
-      </div>
-    </OuterContainer>
-  );
+				</LogoutButton>
+			</div>
+		</OuterContainer>
+	);
 }
 
 const Title = styled.div`
