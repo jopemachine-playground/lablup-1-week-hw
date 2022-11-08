@@ -10,6 +10,10 @@
 
 * Using Mongodb for storing user's information.
 
+* Using nginx as static resource server in frontend.
+
+* Using nginx as reverse-proxy server for load-balancing, and caching.
+
 * Do not keep chatting messages.
 
 * Implemented using socket.io (Web-socket) in the server, client both side.
