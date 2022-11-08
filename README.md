@@ -1,6 +1,8 @@
-# lablup-1-week-hw
+# Chat web app
 
-## Simple specification
+Simple chatting web application built with multi-container for studying purpose.
+
+## Specification
 
 * Multi user, Single Room chatting implementation.
 
@@ -17,8 +19,6 @@
 * Do not keep chatting messages.
 
 * Implemented using socket.io (Web-socket) in the server, client both side.
-
-* Include Dockerfile, docker-compose.yml
 
 ## Set up
 

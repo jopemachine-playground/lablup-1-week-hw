@@ -1,13 +1,13 @@
-# Q: 파이썬에서 이걸 좀 더 잘 처리할 수 있는 방법?
 import sys
 import logging
 from aiohttp import web
 sys.path.append('../')
 
+# Q: 파이썬에서 이걸 좀 더 잘 처리할 수 있는 방법?
 from config import APP_NAME
 from api import mongo_db_client, redis_userlogin_client
-from utils import is_valid_user, generate_session_id, get_password_hash, \
-    check_passwd_match
+from utils import generate_session_id, get_password_hash, \
+    check_passwd_match, authenticated
 
 routes = web.RouteTableDef()
 
@@ -98,12 +98,9 @@ async def signup(request):
 
 
 @routes.get('/api/v1/signout')
+@authenticated
 def signout(request):
     user_id = request.cookies.get('user_id')
-    session_id = request.cookies.get('session_id')
-
-    if not is_valid_user(user_id, session_id):
-        return web.Response(status=401)
 
     if not user_id:
         return web.Response(status=400)
@@ -119,11 +116,6 @@ def signout(request):
 
 
 @routes.get('/api/v1/ping')
-def check_login_session_is_valid(request):
-    user_id = request.cookies.get('user_id')
-    session_id = request.cookies.get('session_id')
-
-    if not is_valid_user(user_id, session_id):
-        return web.Response(status=401)
-
+@authenticated
+def check_login_session_is_valid(_request):
     return web.Response(status=200)

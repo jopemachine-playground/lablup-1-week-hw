@@ -1,4 +1,5 @@
 import hashlib
+from aiohttp import web
 from time import time
 from api import redis_userlogin_client
 import bcrypt
@@ -12,10 +13,18 @@ def check_passwd_match(pw1, pw2):
     return bcrypt.checkpw(pw1, pw2)
 
 
-def is_valid_user(user_id, session_id):
-    if not redis_userlogin_client.get(user_id):
-        return False
-    return redis_userlogin_client.get(user_id).decode('utf-8') == session_id
+def authenticated(original_function):
+    def wrapper(request):
+        user_id = request.cookies.get('user_id')
+        session_id = request.cookies.get('session_id')
+
+        if not redis_userlogin_client.get(user_id):
+            return web.Response(status=401)
+        if redis_userlogin_client.get(user_id).decode('utf-8') != session_id:
+            return web.Response(status=401)
+
+        return original_function(request)
+    return wrapper
 
 
 def generate_session_id(user_id, user_pw):
