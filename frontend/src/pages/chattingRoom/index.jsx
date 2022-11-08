@@ -47,6 +47,7 @@ export default function ChattingRoom(props) {
 				path: '/socket.io',
 				port: 8080,
 				forceNew: true,
+				// TODO: websocket 연결에도 별개의 인증 방법이 필요함.
 			},
 		);
 
