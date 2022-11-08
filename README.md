@@ -20,6 +20,8 @@ Simple chatting web application built with multi-container for studying purpose
 
 * Implemented using socket.io (Web-socket) in the server, client both side.
 
+![](./chat-app.drawio.png)
+
 ## Set up
 
 To run service, run below command.
