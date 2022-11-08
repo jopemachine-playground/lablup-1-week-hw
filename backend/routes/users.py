@@ -115,7 +115,7 @@ def signout(request):
     return res
 
 
-@routes.get('/api/v1/ping')
+@routes.get('/api/v1/check_login_session_is_valid')
 @authenticated
 def check_login_session_is_valid(_request):
     return web.Response(status=200)

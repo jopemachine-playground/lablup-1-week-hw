@@ -11,7 +11,7 @@ def setup_route(app, cors):
         web.post('/api/v1/signin', signin),
         web.post('/api/v1/signup', signup),
         web.get('/api/v1/signout', signout),
-        web.get('/api/v1/ping', check_login_session_is_valid),
+        web.get('/api/v1/check_login_session_is_valid', check_login_session_is_valid),
     ])
 
     for route in list(app.router.routes()):

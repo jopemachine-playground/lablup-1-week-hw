@@ -26,7 +26,7 @@ export default function ChattingRoom(props) {
 
 	useEffect(() => {
 		axios
-			.get(`${API.CHATTING_BACKEND}/api/v1/ping`, {
+			.get(`${API.CHATTING_BACKEND}/api/v1/check_login_session_is_valid`, {
 				withCredentials: true,
 			})
 			.catch(error => {
@@ -52,6 +52,16 @@ export default function ChattingRoom(props) {
 
 		socket.on('connect', () => {
 			console.log('ws for chatting connected successfully.');
+		});
+
+		socket.on('error', () => {
+			console.log('error occured!');
+			props.setPage('SignIn');
+		});
+
+		socket.on('disconnect', () => {
+			console.log('disconnect occured!');
+			props.setPage('SignIn');
 		});
 
 		socket.on('message', message => {
