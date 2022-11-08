@@ -74,6 +74,7 @@ export default function ChattingRoom(props) {
 			});
 
 			ws.emit('message', chatData);
+			setChat('');
 		}
 	};
 
