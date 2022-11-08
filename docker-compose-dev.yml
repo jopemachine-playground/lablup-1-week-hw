@@ -1,13 +1,11 @@
 version: "3"
 services:
-  react:
+  frontend:
     depends_on:
       - backend
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-      - 3000:3000
     volumes:
       - /usr/src/app/node_modules
       - ./frontend:/usr/src/app
@@ -35,3 +33,14 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - 8080:8080
+
+  nginx:
+    depends_on:
+      - frontend
+      - backend
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    ports:
+      - 3000:80
