@@ -18,10 +18,6 @@ def setup_route(app, cors):
         cors.add(route)
 
 
-def setup_middlewares(app):
-    pass
-
-
 def setup_websocket_server(app):
     sio = socketio.AsyncServer(
         async_mode="aiohttp",
@@ -48,7 +44,6 @@ def main():
     })
 
     setup_route(app=app, cors=cors)
-    setup_middlewares(app)
     setup_websocket_server(app)
 
     web.run_app(app)
